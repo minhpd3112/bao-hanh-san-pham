@@ -4,15 +4,15 @@ Dự án này cung cấp một giải pháp đăng ký bảo hành điện tử 
 
 ## **Mục Lục**
 
-1. [Tổng Quan Dự Án](https://www.google.com/search?q=%23t%E1%BB%95ng-quan-d%E1%BB%B1-%C3%A1n)  
-2. [Các Thành Phần Chính](https://www.google.com/search?q=%23c%C3%A1c-th%C3%A0nh-ph%E1%BA%A7n-ch%C3%ADnh)  
-3. [Hướng Dẫn Triển Khai Chi Tiết](https://www.google.com/search?q=%23h%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-tri%E1%BB%83n-khai-chi-ti%E1%BA%BFt)  
-   * [Bước 1: Chuẩn Bị Google Sheet](https://www.google.com/search?q=%23b%C6%B0%E1%BB%9Bc-1-chu%E1%BA%A9n-b%E1%BB%8B-google-sheet)  
-   * [Bước 2: Tạo Google Apps Script](https://www.google.com/search?q=%23b%C6%B0%E1%BB%9Bc-2-t%E1%BA%A1o-google-apps-script)  
-   * [Bước 3: Cập Nhật Mã HTML của Biểu Mẫu](https://www.google.com/search?q=%23b%C6%B0%E1%BB%9Bc-3-c%E1%BA%ADp-nh%E1%BA%ADt-m%C3%A3-html-c%E1%BB%A7a-bi%E1%BB%83u-m%E1%BA%ABu)  
-   * [Bước 4: Triển Khai Biểu Mẫu Lên GitHub Pages](https://www.google.com/search?q=%23b%C6%B0%E1%BB%9Bc-4-tri%E1%BB%83n-khai-bi%E1%BB%83u-m%E1%BA%ABu-l%C3%AAn-github-pages)  
-4. [Cách Thức Hoạt Động](https://www.google.com/search?q=%23c%C3%A1ch-th%E1%BB%A9c-ho%E1%BA%A1t-%C4%91%E1%BB%99ng)  
-5. [Tùy Chỉnh & Mở Rộng](https://www.google.com/search?q=%23t%C3%B9y-ch%E1%BB%89nh-m%E1%BB%9F-r%E1%BB%99ng)
+1. [Tổng Quan Dự Án]  
+2. [Các Thành Phần Chính]  
+3. [Hướng Dẫn Triển Khai Chi Tiết]
+   * [Bước 1: Chuẩn Bị Google Sheet]
+   * [Bước 2: Tạo Google Apps Script]
+   * [Bước 3: Cập Nhật Mã HTML của Biểu Mẫu]
+   * [Bước 4: Triển Khai Biểu Mẫu Lên GitHub Pages]
+4. [Cách Thức Hoạt Động]
+5. [Tùy Chỉnh & Mở Rộng]
 
 ## **Tổng Quan Dự Án**
 
@@ -114,7 +114,7 @@ function doPost(e) {
 
 Mã HTML này là giao diện người dùng chính.
 
-1. **Lấy mã HTML:** Sử dụng mã HTML từ Canvas "Trang Đăng Ký Bảo Hành Sản Phẩm (Mã Sản Phẩm)" mà tôi đã cung cấp cho bạn.  
+1. **Lấy mã HTML:** Sử dụng mã HTML.  
 2. **Lưu tệp HTML:** Lưu toàn bộ mã đó vào một tệp trên máy tính của bạn với tên ví dụ: baohanh.html.  
 3. **Thay thế YOUR\_WEB\_APP\_URL\_HERE:**  
    * Mở tệp baohanh.html bằng trình soạn thảo văn bản.  
@@ -126,23 +126,16 @@ Mã HTML này là giao diện người dùng chính.
 
 Đây là cách để biểu mẫu HTML của bạn có thể truy cập được công khai qua một liên kết.
 
-1. **Tạo tài khoản GitHub:** Truy cập [github.com](https://github.com/) và đăng ký nếu bạn chưa có.  
-2. **Tạo kho lưu trữ (Repository) mới:**  
-   * Đăng nhập GitHub, nhấp vào \+ ở góc trên bên phải, chọn **"New repository"**.  
-   * Đặt tên cho kho lưu trữ, ví dụ: phu-tung-oto-warranty.  
-   * Chọn Public và nhấp **"Create repository"**.  
-3. **Tải tệp HTML lên:**  
-   * Trong kho lưu trữ bạn vừa tạo, nhấp vào **"Add file"** \> **"Upload files"**.  
-   * Kéo và thả tệp baohanh.html của bạn vào đây.  
-   * Nhấp **"Commit changes"**.  
-4. **Kích hoạt GitHub Pages:**  
+1. **Tạo kho lưu trữ (Repository) mới:**    
+   *Tải tệp HTML lên:* 
+2. **Kích hoạt GitHub Pages:**  
    * Trong kho lưu trữ của bạn, nhấp vào tab **"Settings"**.  
    * Trong menu bên trái, nhấp vào **"Pages"**.  
    * Trong phần "Build and deployment" \> "Source", chọn **"Deploy from a branch"**.  
    * Trong phần "Branch", chọn nhánh mà bạn đã tải tệp lên (thường là main hoặc master).  
    * Chọn thư mục gốc là / (root).  
    * Nhấp **"Save"**.  
-5. **Lấy liên kết công khai:**  
+3. **Lấy liên kết công khai:**  
    * Sau khi lưu, GitHub Pages sẽ bắt đầu triển khai (có thể mất vài phút).  
    * Làm mới trang "Pages" sau một thời gian, bạn sẽ thấy thông báo "Your site is published at..." cùng với **URL công khai** của biểu mẫu.  
    * Đường dẫn sẽ có dạng: https://yourusername.github.io/your-repository-name/baohanh.html
