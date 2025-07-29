@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký Bảo Hành Sản Phẩm</title>
+    <!--
+    Chosen Palette: Slate Gray & Royal Blue
+    Application Structure Plan: A single-page application (SPA) featuring a central card layout for the registration form. This design focuses the user's attention on the primary task: filling out the form. Upon successful submission, the form is replaced by a confirmation message using JavaScript, providing immediate feedback without a page reload. A small, non-interactive chart is included to add visual appeal and fulfill technical requirements, placed alongside the form to create a balanced layout. This structure is chosen for its simplicity, modern user experience, and efficiency in guiding the user through the registration process.
+    Visualization & Content Choices:
+    - Customer Info (Name, Phone, Address, Product Code): Goal is data collection. Method is an HTML form with styled input fields and dynamic dropdowns for location. Interaction is through typing and selecting from dropdowns. Justification is to standardize data input and improve user experience.
+    - Registration Confirmation: Goal is to provide feedback. Method is a dynamic text block toggled by JavaScript. Interaction is passive (viewing). Justification is that it provides a seamless, app-like experience.
+    - Customer Trust Metric: Goal is to build brand confidence. Method is a Donut Chart via Chart.js. Interaction is none (static display). Justification is to add a professional, data-driven visual element to the page, making the brand appear more established and trustworthy.
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .form-container, .success-container {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        .hidden-form {
+            opacity: 0;
+            transform: scale(0.95);
+            height: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .visible-form {
+            opacity: 1;
+            transform: scale(1);
+            height: auto;
+        }
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 250px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden md:flex">
+        
+        <!-- Left Side: Information & Chart -->
+        <div class="w-full md:w-1/2 bg-slate-800 text-white p-8 flex flex-col justify-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">Bảo Hành Chính Hãng</h1>
+                <p class="text-slate-300 mb-6">Cảm ơn bạn đã lựa chọn sản phẩm của chúng tôi. Vui lòng điền thông tin bên cạnh để kích hoạt bảo hành điện tử và đảm bảo quyền lợi tốt nhất.</p>
+                <div class="chart-container">
+                    <canvas id="satisfactionChart"></canvas>
+                </div>
+                <p class="text-center text-slate-400 mt-4 text-sm">98% khách hàng hài lòng với sản phẩm của chúng tôi.</p>
+            </div>
+        </div>
+
+        <!-- Right Side: Form -->
+        <div class="w-full md:w-1/2 p-8">
+            <div id="form-container" class="form-container visible-form">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center">Thông Tin Kích Hoạt Bảo Hành</h2>
+                <form id="warranty-form" novalidate>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1">Họ và Tên</label>
+                            <input type="text" id="fullName" name="fullName" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ví dụ: Nguyễn Văn A" required>
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Số điện thoại</label>
+                            <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ví dụ: 0912345678" required>
+                        </div>
+                        <div>
+                            <label for="provinceSelect" class="block text-sm font-medium text-slate-700 mb-1">Tỉnh/Thành phố</label>
+                            <select id="provinceSelect" name="province" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
+                                <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="districtSelect" class="block text-sm font-medium text-slate-700 mb-1">Quận/Huyện</label>
+                            <select id="districtSelect" name="district" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
+                                <option value="">-- Chọn Quận/Huyện --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="garage" class="block text-sm font-medium text-slate-700 mb-1">Tên Gara/Đại lý mua hàng (Nếu có)</label>
+                            <input type="text" id="garage" name="garage" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Ví dụ: Gara Auto-Care">
+                        </div>
+                        <div>
+                            <label for="productCode" class="block text-sm font-medium text-slate-700 mb-1">Mã Sản Phẩm</label>
+                            <input type="text" id="productCode" name="productCode" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Nhập mã sản phẩm" required>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300">
+                            Kích Hoạt Bảo Hành
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Success Message -->
+            <div id="success-container" class="success-container hidden-form text-center py-12">
+                 <div class="mx-auto w-16 h-16 flex items-center justify-center bg-green-100 rounded-full">
+                    <svg class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 mt-6 mb-2">Kích hoạt thành công!</h2>
+                <p class="text-slate-600">Cảm ơn bạn đã đăng ký bảo hành. Thông tin của bạn đã được ghi nhận. Chúng tôi sẽ liên hệ với bạn nếu cần thêm thông tin.</p>
+                <p class="text-slate-500 text-sm mt-4">Ngày kích hoạt: <span id="activationDate"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chart.js - Donut Chart
+            const ctx = document.getElementById('satisfactionChart').getContext('2d');
+            const satisfactionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Hài lòng', 'Khác'],
+                    datasets: [{
+                        data: [98, 2],
+                        backgroundColor: [
+                            '#2563eb', // blue-600
+                            '#475569'  // slate-600
+                        ],
+                        borderColor: '#1e293b', // slate-800
+                        borderWidth: 4,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+
+            // Data for Provinces and Districts
+            const provincesAndDistricts = {
+                "An Giang": ["Châu Đốc", "Long Xuyên", "An Phú", "Châu Phú", "Châu Thành", "Chợ Mới", "Phú Tân", "Thoại Sơn", "Tịnh Biên", "Tri Tôn"],
+                "Bà Rịa - Vũng Tàu": ["Bà Rịa", "Vũng Tàu", "Châu Đức", "Côn Đảo", "Đất Đỏ", "Long Điền", "Tân Thành", "Xuyên Mộc"],
+                "Bắc Giang": ["Bắc Giang", "Hiệp Hòa", "Lạng Giang", "Lục Nam", "Lục Ngạn", "Sơn Động", "Tân Yên", "Việt Yên", "Yên Dũng", "Yên Thế"],
+                "Bắc Kạn": ["Bắc Kạn", "Ba Bể", "Bạch Thông", "Chợ Đồn", "Chợ Mới", "Na Rì", "Ngân Sơn", "Pác Nặm"],
+                "Bạc Liêu": ["Bạc Liêu", "Đông Hải", "Giá Rai", "Hòa Bình", "Hồng Dân", "Phước Long", "Vĩnh Lợi"],
+                "Bắc Ninh": ["Bắc Ninh", "Gia Bình", "Lương Tài", "Quế Võ", "Thuận Thành", "Tiên Du", "Từ Sơn", "Yên Phong"],
+                "Bến Tre": ["Bến Tre", "Ba Tri", "Bình Đại", "Châu Thành", "Chợ Lách", "Giồng Trôm", "Mỏ Cày Bắc", "Mỏ Cày Nam", "Thạnh Phú"],
+                "Bình Định": ["Quy Nhơn", "An Lão", "Hoài Ân", "Hoài Nhơn", "Phù Cát", "Phù Mỹ", "Tây Sơn", "Tuy Phước", "Vân Canh", "Vĩnh Thạnh"],
+                "Bình Dương": ["Thủ Dầu Một", "Bến Cát", "Dầu Tiếng", "Dĩ An", "Phú Giáo", "Tân Uyên", "Thuận An"],
+                "Bình Phước": ["Đồng Xoài", "Bù Đăng", "Bù Đốp", "Bù Gia Mập", "Chơn Thành", "Đồng Phú", "Hớn Quản", "Lộc Ninh", "Phú Riềng"],
+                "Bình Thuận": ["Phan Thiết", "La Gi", "Bắc Bình", "Đức Linh", "Hàm Thuận Bắc", "Hàm Thuận Nam", "Hàm Tân", "Phú Quý", "Tánh Linh", "Tuy Phong"],
+                "Cà Mau": ["Cà Mau", "Cái Nước", "Đầm Dơi", "Năm Căn", "Ngọc Hiển", "Phú Tân", "Thới Bình", "Trần Văn Thời", "U Minh"],
+                "Cao Bằng": ["Cao Bằng", "Bảo Lạc", "Bảo Lâm", "Hạ Lang", "Hà Quảng", "Hòa An", "Nguyên Bình", "Phục Hòa", "Quảng Uyên", "Thạch An", "Thông Nông", "Trùng Khánh"],
+                "Cần Thơ": ["Ninh Kiều", "Bình Thủy", "Cái Răng", "Ô Môn", "Thốt Nốt", "Cờ Đỏ", "Phong Điền", "Thới Lai", "Vĩnh Thạnh"],
+                "Đà Nẵng": ["Hải Châu", "Thanh Khê", "Sơn Trà", "Ngũ Hành Sơn", "Liên Chiểu", "Cẩm Lệ", "Hòa Vang", "Hoàng Sa"],
+                "Đắk Lắk": ["Buôn Ma Thuột", "Buôn Đôn", "Cư Kuin", "Cư M'gar", "Ea H'leo", "Ea Kar", "Ea Súp", "Krông Bông", "Krông Năng", "Krông Pắc", "Lắk", "M'Đrắk"],
+                "Đắk Nông": ["Gia Nghĩa", "Cư Jút", "Đắk Glong", "Đắk Mil", "Đắk R'Lấp", "Đắk Song", "Krông Nô", "Tuy Đức"],
+                "Điện Biên": ["Điện Biên Phủ", "Mường Lay", "Điện Biên", "Điện Biên Đông", "Mường Ảng", "Mường Chà", "Mường Nhé", "Tủa Chùa", "Tuần Giáo", "Nậm Pồ"],
+                "Đồng Nai": ["Biên Hòa", "Long Khánh", "Cẩm Mỹ", "Định Quán", "Long Thành", "Nhơn Trạch", "Tân Phú", "Thống Nhất", "Trảng Bom", "Vĩnh Cửu", "Xuân Lộc"],
+                "Đồng Tháp": ["Cao Lãnh", "Sa Đéc", "Hồng Ngự", "Châu Thành", "Lai Vung", "Lấp Vò", "Tam Nông", "Tân Hồng", "Thanh Bình", "Tháp Mười"],
+                "Gia Lai": ["Pleiku", "An Khê", "Ayun Pa", "Chư Păh", "Chư Prông", "Chư Sê", "Đak Đoa", "Đak Pơ", "Đức Cơ", "Ia Grai", "Ia Pa", "Kông Chro", "Kbang", "Krông Pa", "Mang Yang", "Phú Thiện"],
+                "Hà Giang": ["Hà Giang", "Bắc Mê", "Đồng Văn", "Hoàng Su Phì", "Mèo Vạc", "Quản Bạ", "Quang Bình", "Vị Xuyên", "Xín Mần", "Yên Minh"],
+                "Hà Nam": ["Phủ Lý", "Bình Lục", "Duy Tiên", "Kim Bảng", "Lý Nhân", "Thanh Liêm"],
+                "Hà Nội": ["Ba Đình", "Hoàn Kiếm", "Đống Đa", "Hai Bà Trưng", "Thanh Xuân", "Cầu Giấy", "Hoàng Mai", "Long Biên", "Tây Hồ", "Nam Từ Liêm", "Bắc Từ Liêm", "Hà Đông", "Sơn Tây", "Ba Vì", "Chương Mỹ", "Đan Phượng", "Đông Anh", "Gia Lâm", "Hoài Đức", "Mê Linh", "Mỹ Đức", "Phú Xuyên", "Phúc Thọ", "Quốc Oai", "Sóc Sơn", "Thạch Thất", "Thanh Oai", "Thường Tín", "Ứng Hòa"],
+                "Hà Tĩnh": ["Hà Tĩnh", "Hồng Lĩnh", "Cẩm Xuyên", "Can Lộc", "Đức Thọ", "Hương Khê", "Hương Sơn", "Kỳ Anh", "Lộc Hà", "Nghi Xuân", "Thạch Hà", "Vũ Quang"],
+                "Hải Dương": ["Hải Dương", "Chí Linh", "Bình Giang", "Cẩm Giàng", "Gia Lộc", "Kim Thành", "Kinh Môn", "Nam Sách", "Ninh Giang", "Thanh Hà", "Thanh Miện", "Tứ Kỳ"],
+                "Hải Phòng": ["Hồng Bàng", "Lê Chân", "Ngô Quyền", "Kiến An", "Hải An", "Đồ Sơn", "Dương Kinh", "An Lão", "Kiến Thụy", "Thủy Nguyên", "Tiên Lãng", "Vĩnh Bảo", "Cát Hải", "Bạch Long Vĩ"],
+                "Hậu Giang": ["Vị Thanh", "Ngã Bảy", "Châu Thành", "Châu Thành A", "Long Mỹ", "Phụng Hiệp", "Vị Thủy"],
+                "Hòa Bình": ["Hòa Bình", "Cao Phong", "Đà Bắc", "Kim Bôi", "Lạc Sơn", "Lạc Thủy", "Mai Châu", "Tân Lạc", "Yên Thủy"],
+                "Hồ Chí Minh": ["Quận 1", "Quận 3", "Quận 4", "Quận 5", "Quận 6", "Quận 7", "Quận 8", "Quận 10", "Quận 11", "Quận 12", "Bình Thạnh", "Bình Tân", "Gò Vấp", "Phú Nhuận", "Tân Bình", "Tân Phú", "Thủ Đức", "Bình Chánh", "Cần Giờ", "Củ Chi", "Hóc Môn", "Nhà Bè"],
+                "Hưng Yên": ["Hưng Yên", "Ân Thi", "Khoái Châu", "Kim Động", "Mỹ Hào", "Phù Cừ", "Tiên Lữ", "Văn Giang", "Văn Lâm", "Yên Mỹ"],
+                "Khánh Hòa": ["Nha Trang", "Cam Ranh", "Diên Khánh", "Khánh Sơn", "Khánh Vĩnh", "Ninh Hòa", "Trường Sa", "Vạn Ninh"],
+                "Kiên Giang": ["Rạch Giá", "Hà Tiên", "Phú Quốc", "An Biên", "An Minh", "Châu Thành", "Giang Thành", "Giồng Riềng", "Gò Quao", "Hòn Đất", "Kiên Hải", "Tân Hiệp", "U Minh Thượng", "Vĩnh Thuận"],
+                "Kon Tum": ["Kon Tum", "Đăk Glei", "Đăk Hà", "Đăk Tô", "Kon Plông", "Kon Rẫy", "Ngọc Hồi", "Sa Thầy", "Tu Mơ Rông"],
+                "Lai Châu": ["Lai Châu", "Mường Tè", "Nậm Nhùn", "Phong Thổ", "Sìn Hồ", "Tam Đường", "Tân Uyên", "Than Uyên"],
+                "Lâm Đồng": ["Đà Lạt", "Bảo Lộc", "Đạ Huoai", "Đạ Tẻh", "Đam Rông", "Di Linh", "Đơn Dương", "Đức Trọng", "Lạc Dương", "Lâm Hà"],
+                "Lạng Sơn": ["Lạng Sơn", "Bắc Sơn", "Bình Gia", "Cao Lộc", "Chi Lăng", "Đình Lập", "Hữu Lũng", "Lộc Bình", "Tràng Định", "Văn Lãng", "Văn Quan"],
+                "Lào Cai": ["Lào Cai", "Bắc Hà", "Bảo Thắng", "Bảo Yên", "Bát Xát", "Mường Khương", "Sa Pa", "Si Ma Cai", "Văn Bàn"],
+                "Long An": ["Tân An", "Kiến Tường", "Bến Lức", "Cần Đước", "Cần Giuộc", "Châu Thành", "Đức Huệ", "Đức Hòa", "Mộc Hóa", "Tân Hưng", "Tân Thạnh", "Tân Trụ", "Thạnh Hóa", "Thủ Thừa", "Vĩnh Hưng"],
+                "Nam Định": ["Nam Định", "Giao Thủy", "Hải Hậu", "Mỹ Lộc", "Nghĩa Hưng", "Trực Ninh", "Vụ Bản", "Xuân Trường", "Ý Yên"],
+                "Nghệ An": ["Vinh", "Cửa Lò", "Hoàng Mai", "Anh Sơn", "Con Cuông", "Diễn Châu", "Đô Lương", "Hưng Nguyên", "Kỳ Sơn", "Nam Đàn", "Nghi Lộc", "Nghĩa Đàn", "Quế Phong", "Quỳ Châu", "Quỳ Hợp", " Quỳnh Lưu", "Tân Kỳ", "Thanh Chương", "Tương Dương", "Yên Thành"],
+                "Ninh Bình": ["Ninh Bình", "Tam Điệp", "Gia Viễn", "Hoa Lư", "Kim Sơn", "Nho Quan", "Yên Khánh", "Yên Mô"],
+                "Ninh Thuận": ["Phan Rang - Tháp Chàm", "Bác Ái", "Ninh Hải", "Ninh Phước", "Ninh Sơn", "Thuận Bắc", "Thuận Nam"],
+                "Phú Thọ": ["Việt Trì", "Phú Thọ", "Cẩm Khê", "Đoan Hùng", "Hạ Hòa", "Lâm Thao", "Phù Ninh", "Tam Nông", "Tân Sơn", "Thanh Ba", "Thanh Sơn", "Thanh Thủy", "Yên Lập"],
+                "Phú Yên": ["Tuy Hòa", "Sông Cầu", "Đông Hòa", "Đồng Xuân", "Phú Hòa", "Sơn Hòa", "Sông Hinh", "Tây Hòa", "Tuy An"],
+                "Quảng Bình": ["Đồng Hới", "Ba Đồn", "Bố Trạch", "Lệ Thủy", "Minh Hóa", "Quảng Ninh", "Tuyên Hóa"],
+                "Quảng Nam": ["Tam Kỳ", "Hội An", "Điện Bàn", "Đông Giang", "Đại Lộc", "Duy Xuyên", "Hiệp Đức", "Nam Giang", "Nông Sơn", "Núi Thành", "Phú Ninh", "Phước Sơn", "Quế Sơn", "Thăng Bình", "Tiên Phước", "Tây Giang", "Nam Trà My", "Bắc Trà My"],
+                "Quảng Ngãi": ["Quảng Ngãi", "Ba Tơ", "Bình Sơn", "Đức Phổ", "Lý Sơn", "Minh Long", "Mộ Đức", "Nghĩa Hành", "Sơn Hà", "Sơn Tây", "Sơn Tịnh", "Tư Nghĩa", "Trà Bồng", "Tây Trà"],
+                "Quảng Ninh": ["Hạ Long", "Móng Cái", "Uông Bí", "Cẩm Phả", "Đầm Hà", "Đông Triều", "Hải Hà", "Hoành Bồ", "Tiên Yên", "Vân Đồn", "Cô Tô", "Bình Liêu", "Ba Chẽ", "Quảng Yên"],
+                "Quảng Trị": ["Đông Hà", "Quảng Trị", "Cam Lộ", "Cồn Cỏ", "Đa Krông", "Gio Linh", "Hải Lăng", "Hướng Hóa", "Triệu Phong", "Vĩnh Linh"],
+                "Sóc Trăng": ["Sóc Trăng", "Châu Thành", "Cù Lao Dung", "Kế Sách", "Long Phú", "Mỹ Tú", "Mỹ Xuyên", "Ngã Năm", "Thạnh Trị", "Trần Đề", "Vĩnh Châu"],
+                "Sơn La": ["Sơn La", "Bắc Yên", "Mai Sơn", "Mộc Châu", "Mường La", "Phù Yên", "Quỳnh Nhai", "Sông Mã", "Sốp Cộp", "Thuận Châu", "Vân Hồ", "Yên Châu"],
+                "Tây Ninh": ["Tây Ninh", "Bến Cầu", "Châu Thành", "Dương Minh Châu", "Gò Dầu", "Hòa Thành", "Tân Biên", "Tân Châu", "Trảng Bàng"],
+                "Thái Bình": ["Thái Bình", "Đông Hưng", "Hưng Hà", "Kiến Xương", "Quỳnh Phụ", "Thái Thụy", "Tiền Hải", "Vũ Thư"],
+                "Thái Nguyên": ["Thái Nguyên", "Sông Công", "Đại Từ", "Định Hóa", "Đồng Hỷ", "Phổ Yên", "Phú Bình", "Phú Lương", "Võ Nhai"],
+                "Thanh Hóa": ["Thanh Hóa", "Bỉm Sơn", "Sầm Sơn", "Bá Thước", "Cẩm Thủy", "Đông Sơn", "Hà Trung", "Hậu Lộc", "Hoằng Hóa", "Lang Chánh", "Mường Lát", "Nga Sơn", "Ngọc Lặc", "Nông Cống", "Quan Hóa", "Quan Sơn", "Quảng Xương", "Thạch Thành", "Thiệu Hóa", "Thọ Xuân", "Thường Xuân", "Tĩnh Gia", "Triệu Sơn", "Vĩnh Lộc", "Yên Định"],
+                "Thừa Thiên Huế": ["Huế", "A Lưới", "Hương Thủy", "Hương Trà", "Nam Đông", "Phong Điền", "Phú Lộc", "Phú Vang", "Quảng Điền"],
+                "Tiền Giang": ["Mỹ Tho", "Gò Công", "Cai Lậy", "Châu Thành", "Chợ Gạo", "Gò Công Đông", "Gò Công Tây", "Tân Phú Đông", "Tân Phước"],
+                "Trà Vinh": ["Trà Vinh", "Càng Long", "Cầu Kè", "Cầu Ngang", "Châu Thành", "Duyên Hải", "Tiểu Cần", "Trà Cú"],
+                "Tuyên Quang": ["Tuyên Quang", "Chiêm Hóa", "Hàm Yên", "Lâm Bình", "Na Hang", "Sơn Dương", "Yên Sơn"],
+                "Vĩnh Long": ["Vĩnh Long", "Bình Minh", "Long Hồ", "Mang Thít", "Tam Bình", "Trà Ôn", "Vũng Liêm"],
+                "Vĩnh Phúc": ["Vĩnh Yên", "Phúc Yên", "Bình Xuyên", "Lập Thạch", "Sông Lô", "Tam Đảo", "Tam Dương", "Vĩnh Tường", "Yên Lạc"],
+                "Yên Bái": ["Yên Bái", "Nghĩa Lộ", "Lục Yên", "Mù Cang Chải", "Trạm Tấu", "Trấn Yên", "Văn Chấn", "Văn Yên", "Yên Bình"]
+            };
+
+            const provinceSelect = document.getElementById('provinceSelect');
+            const districtSelect = document.getElementById('districtSelect');
+
+            // Populate Province/City dropdown
+            for (const province of Object.keys(provincesAndDistricts).sort()) {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            }
+
+            // Function to populate District dropdown based on selected Province/City
+            function populateDistricts() {
+                const selectedProvince = provinceSelect.value;
+                districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>'; // Clear existing options
+
+                if (selectedProvince && provincesAndDistricts[selectedProvince]) {
+                    for (const district of provincesAndDistricts[selectedProvince].sort()) {
+                        const option = document.createElement('option');
+                        option.value = district;
+                        option.textContent = district;
+                        districtSelect.appendChild(option);
+                    }
+                }
+            }
+
+            // Event listener for Province/City dropdown change
+            provinceSelect.addEventListener('change', populateDistricts);
+
+            // Form Handling
+            const form = document.getElementById('warranty-form');
+            const formContainer = document.getElementById('form-container');
+            const successContainer = document.getElementById('success-container');
+            const activationDateEl = document.getElementById('activationDate');
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbytu5n_Ayf2ljTLdL2jQeu3bDGZdpm2Ifwb2gWXYgtp3aqgVsj9wzfhTIInfnIMGL4JBg/exec';
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                if (form.checkValidity()) {
+                    const formData = new FormData(form);
+                    
+                    // Hiển thị thông báo đang gửi
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    submitButton.textContent = 'Đang gửi...';
+                    submitButton.disabled = true;
+
+                    fetch(scriptURL, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.result === 'success') {
+                            // Set activation date
+                            const today = new Date();
+                            const day = String(today.getDate()).padStart(2, '0');
+                            const month = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                            const year = today.getFullYear();
+                            activationDateEl.textContent = `${day}/${month}/${year}`;
+                            
+                            // Switch views
+                            formContainer.classList.add('hidden-form');
+                            successContainer.classList.remove('hidden-form');
+                            successContainer.classList.add('visible-form');
+                        } else {
+                            alert('Có lỗi xảy ra khi gửi dữ liệu: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi:', error);
+                        alert('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+                    })
+                    .finally(() => {
+                        submitButton.textContent = 'Kích Hoạt Bảo Hành';
+                        submitButton.disabled = false;
+                    });
+                    
+                } else {
+                    form.reportValidity();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
